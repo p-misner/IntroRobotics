@@ -12,60 +12,63 @@ from pybricks.robotics import DriveBase
 
 right_motor = Motor(Port.D, Direction.COUNTERCLOCKWISE)
 left_motor = Motor(Port.A, Direction.COUNTERCLOCKWISE)
+#small = Motor(Port.C, Direction.COUNTERCLOCKWISE)
+robot = DriveBase(left_motor,right_motor,56,160)
 light = ColorSensor(Port.S3)
-rtouch = TouchSensor(Port.S4)
-ltouch = TouchSensor(Port.S2)
+ultra = UltrasonicSensor(Port.S2)
+#rtouch = TouchSensor(Port.S4)
+#touch = TouchSensor(Port.S2)
 
-def moveBack_left():
-    print('BACK CALLED')
-    left_motor.run_time(180,2000,Stop.COAST, True)
-    right_motor.run_time(-180,2000,Stop.COAST, True)
-    #turn(90)
-def moveForward():
-    left_motor.run(180)
-    right_motor.run(180)
-
-def turn(turn_angle):
-    if (checkReflection() > 10):
-        left_motor.run_angle(60,turn_angle,Stop.COAST,True)
-        #right_motor.run_angle(60,-turn_angle,Stop.COAST,True)
-    
 
 def checkReflection():
     reflect = light.ambient()
-    
     if reflect>13:
         #on the table
         return(True)
     else:
         return(False)
 
-''' START HERE '''
 # Establishing counter values
 l_counter = 0
 r_counter = 0
 
 while True:
-
     # Defining sensor variables
     onTable = checkReflection()
-    l_sideOn = ltouch.pressed()
-    r_sideOn = rtouch.pressed()
+    #l_sideOn = ltouch.pressed()
+    #r_sideOn = rtouch.pressed()
     
-    print("Light Sensor is ", onTable)
-    print("Right Side is ", r_sideOn)
-    print("Left Side is ", l_sideOn)
-    print(checkReflection())
-    while True:
-        left_motor.run_target(300,1200)
+    #currangle = (small.angle())%365
+    print(ultra.distance())
+    '''
+    if currangle < 180:
+        small.run(75)
+    else:
+        small.run(-75)
+    '''
+    
+    
+    #print("Light Sensor is ", onTable)
+    #print("Right Side is ", r_sideOn)
+    #print("Left Side is ", l_sideOn)
+   
+    if onTable == True:
+        if (ultra.distance() <300):
+            robot.drive(200,0)
+        else: 
+            robot.drive(100,0)
+    elif onTable == False:
+        robot.drive_time(-100,70,2000)
+    
         
-    
+      
+        
+    '''
     #In the case that only the left limit switch runs off (shallow angle of approach)
     if (l_sideOn == False):
         #brick.sound.beep()
         if (onTable == True):
-            right_motor.run_time(-180,10,Stop.COAST, True)
-            left_motor.run_time(-180,2000,Stop.COAST, True)
+            left_motor.run_target(300,-1200)
         else: 
             right_motor.run(0)
             left_motor.run_time(-180,2000,Stop.COAST, True)
@@ -74,11 +77,9 @@ while True:
     elif (r_sideOn == False):
         #brick.sound.beep()
         if (onTable == True) and (l_sideOn == True):
-            left_motor.run_time(-180,100,Stop.COAST, True)
-            right_motor.run_time(-180,2000,Stop.COAST, True)
+            left_motor.run(-180)
         else: 
-            left_motor.run(0)
-            right_motor.run_time(-180,2000,Stop.COAST, True)
+            left_motor.run(-180)
         
         
 
@@ -104,3 +105,4 @@ while True:
     elif (((l_sideOn == True) and (r_sideOn == True)) and (onTable == True)):
         right_motor.run(200)
         left_motor.run(200) 
+'''
