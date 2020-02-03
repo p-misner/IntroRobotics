@@ -9,11 +9,10 @@ from pybricks.tools import print, wait, StopWatch
 from pybricks.robotics import DriveBase
 import ubinascii, ujson, urequests, utime
 # Write your program here
-#brick.sound.beep()
-
-     
+brick.sound.beep()
+ '''    
 Key = 'fnqbuA49ZzUBEYS8k1PdSTNv6FNgDXx32PUCBm_u8B'
-     
+#Key = 'zAZnvs9_lRUgQLtciuSuMHSNoqURxyWldeb7Q_EsRs' 
 def SL_setup():
      urlBase = "https://api.systemlinkcloud.com/nitag/v2/tags/"
      headers = {"Accept":"application/json","x-ni-api-key":Key}
@@ -51,16 +50,16 @@ def Create_SL(Tag, Type):
           urequests.put(urlTag,headers=headers,json=propName).text
      except Exception as e:
           print(e)
-          
+'''      
 #Get_SL('Bill')
 #Create_SL('Bill','STRING')
 #Put_SL('Bill','STRING','done')
 #Get_SL('Bill')
 left_motor = Motor(Port.A)
 #right_motor = Motor(Port.D)
-while True:
-    speed = Get_SL('move.forward')
-    #brick.display.text('', Align.CENTER)
+#while True:
+    #speed = Get_SL('moveforward')
+    #brick.display.text(speed, Align.CENTER)
    
-    left_motor.run(int(speed))
-    wait(1000)
+    #left_motor.run(int(speed))
+   # wait(1000)

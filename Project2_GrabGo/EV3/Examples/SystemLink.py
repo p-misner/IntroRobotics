@@ -1,4 +1,4 @@
-import ubinascii, ujson, urequests, utime
+import ubinascii, ujson, urequests, utime, random
      
 Key = 'put your appkey here'
      
@@ -44,3 +44,16 @@ Get_SL('Bill')
 Create_SL('Bill','STRING')
 Put_SL('Bill','STRING','done')
 Get_SL('Bill')
+
+while True: 
+     random = random()
+     random.randint(0,10)
+     brick.display.text(randint)
+
+'''
+1. a dict of facts
+     --> stored in an obj inside this code
+2. random generate every x sec
+     --> inside the code
+3. put the fact based on random num to computer dashboard
+'''
