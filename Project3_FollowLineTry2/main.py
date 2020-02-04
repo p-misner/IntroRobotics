@@ -32,77 +32,64 @@ class MySensor(Ev3devSensor):  #Define Class
         self._mode('ANALOG')
         return self._value(0)
 
-def control(right, left):
-    direction = 1
-    k_p = 0.05
-    k_i = 0.5
-    ldesired = 360
-    rerror =  ldesired - right
-    lerror = ldesired - left
-    int_l = int_l+lerror
-    int_r = int_r+rerror
-
-    print('Left,'+str(lerror)+ ',Right,'+ str(rerror)+'\n')
-
-    if (abs(lerror) > abs(rerror)):
-        direction=-1
-        
-        anglechange = (k_p*abs(lerror) +k_i*int_l)
-        anglechange = direction * anglechange
-        #fobj.write('Left {}'.format(anglechange))
-        fobj.write('Left,'+str(abs(lerror))+ ',Right,'+ str(abs(rerror))+'\n')
-        return(anglechange)
-    else:
-        direction=1
-        
-
-        anglechange = (k_p*abs(rerror)+k_i*int_r)
-        anglechange = direction * anglechange
-        fobj.write('Left,'+str(abs(lerror))+ ',Right,'+ str(abs(rerror))+'\n')
-
-        return(anglechange)
 
 class controller(object):
     '''PID Controller Class for line follow robot'''
-    def __init__(self, setpoint):
-        self.setpoint = setpoint
+    def __init__(self, setpoint_l, setpoint_r):
+        self.setpoint_r = setpoint_r
+        self.setpoint_l = setpoint_l
         self.right = 0
         self.left = 0
         self.lerror = 0 
         self.rerror = 0
         self.int_l = 0
         self.int_r = 0
-        self.k_p = 0.5
-        self.k_i = 0.5
+        self.der_l = 0
+        self.der_r = 0
+        self.der_l_p = 0
+        self.der_r_p = 0
+        
+        
+        self.k_p = 0.3
+        self.k_i = 0
+        self.k_d = 0
 
     def prop_control(self):
-        self.lerror = self.setpoint - self.left
-        self.rerror = self.setpoint - self.right
-
+        #self.left = self.left -25
+        self.lerror = self.setpoint_l - self.left
+        self.rerror = self.setpoint_r - self.right
+        fobj.write('Left,'+str((self.lerror))+ ',Right,'+ str((self.rerror))+'\n')
     def int_control(self):
         self.int_l += self.lerror
         self.int_r += self.rerror
+        fobj.write(',,,,Left Integ,'+str((self.int_l))+ ',Right Integ,'+ str((self.int_r))+'\n')
+        
 
-    # def der_control(self):
-    #     self.der_l_p = self.der_l
-    #     self.der_r_p = self.der_r
-    #     self.der_l = self.lerror - self.der_l_p
-    #     self.der_r = self.rerror - self.der_r_p   
+    def der_control(self):
+        self.der_l_p = self.der_l
+        self.der_r_p = self.der_r
+        self.der_l = self.lerror - self.der_l_p
+        self.der_r = self.rerror - self.der_r_p   
+        fobj.write(',,,,,,,,Left Deriv,'+str(self.der_l)+ ',RightDeriv,'+str(self.der_r)+'\n')
 
     def setangle(self):
         self.prop_control()
-        self.int_control()
-        anglechange = self.k_p * (abs(self.lerror)*-1 + abs(self.rerror)) 
+        #self.int_control()
+        #self.der_control()
+        # proportional control (self.k_p * (abs(self.lerror)*-1 + abs(self.rerror))) +
+        anglechange = (self.k_p * (abs(self.lerror))*-1+ abs(self.rerror))
+        #fobj.write(',,,,,,,,,,,,Output,'+str((anglechange))+'\n')
+        #anglechange += (self.k_d * (self.der_l+self.der_r))
+        
         return anglechange
 
-    # def lost(self):
-    #     if self.lerror and self.rerror > 200:
+   
 
 # Write your program here
 def main():
     #brick.sound.beep()
    
-    sens = LegoPort(address ='ev3-ports:in3') # which port?? 1,2,3, or 4
+    sens = LegoPort(address ='ev3-ports:in1') # which port?? 1,2,3, or 4
     sens.mode = 'ev3-analog'
     
 
@@ -114,12 +101,13 @@ def main():
     while True:
         lightLevel = sensor_left.readvalue()
         lightLevel2 = sensor_right.readvalue()
-        ''' print('Left',lightLevel)
-        print( 'Right', lightLevel2)'''
+        print('Left',lightLevel)
+        print( 'Right', lightLevel2)
         controller.right = lightLevel2
         controller.left = lightLevel
 
         robot.drive(50,controller.setangle())
-controller = controller(350)
+
+controller = controller(400, 400)
 main()
 fobj.close()
