@@ -17,10 +17,10 @@ for line in fin:
 
 df= pd.DataFrame(data)
 
-time = np.arange(53)
+time = np.arange(len(df))
 y1 = pd.to_numeric(df[1])
 y2 =pd.to_numeric(df[3])
 plt.scatter(time,y2)
 plt.scatter(time,y1)
 
-plt.ylim((0,max(y2)+50))
+plt.ylim((0,800)
