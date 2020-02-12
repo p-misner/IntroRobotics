@@ -9,6 +9,12 @@ from pybricks.parameters import (Port, Stop, Direction, Button, Color,
 from pybricks.tools import print, wait, StopWatch
 from pybricks.robotics import DriveBase
 from pybricks.iodevices import AnalogSensor, UARTDevice
+def colorcheck():
+    if color.color() != Color.WHITE:
+        uart.write('b')
+        print('LETTER')
+    else:
+        uart.write('a')
 
 brick.sound.beep()
 print("pls but sadder")
@@ -16,11 +22,11 @@ minimotor = Motor(Port.C)
 leftmotor = Motor(Port.A, Direction.CLOCKWISE)
 rightmotor= Motor(Port.D, Direction.CLOCKWISE)
 robot = DriveBase(leftmotor,rightmotor, 40, 200)
-button = TouchSensor(Port.S1)
-color = ColorSensor(Port.S2)
+#button = TouchSensor(Port.S1)
+color = ColorSensor(Port.S1)
 
 #sense = AnalogSensor(Port.S3, False)
-uart = UARTDevice(Port.S2, 9600, timeout=1000)
+uart = UARTDevice(Port.S4, 9600, timeout=1000)
 direction = 1
 
 #initial waiting phase:
@@ -30,42 +36,48 @@ while uart.waiting() == 0:
     wait(10)
 print('b4')
 handshake = uart.read(1)
-print('hi',handshake)
+print('hi',len(handshake))
 holder = b'a'
 motorspeed = 0
 minispeed = 0
 while True:
-    
+    colorcheck()
     if uart.waiting() != 0:
-        holder = uart.read(1)
+        holder = uart.read(1).decode("utf-8")
         print(holder)
-        if holder == b'y': #forward
+        if holder == 'y': #forward
             motorspeed = 20
             minispeed = 0
-        elif holder == b'u': #backward
+        elif holder == 'u': #backward
             motorspeed = -20
             minispeed = 0
-        elif holder == b's': #left
+        elif holder == 's': #left
             minispeed = -20
             motorspeed = 0
-        elif holder == b'w': #right
+        elif holder == 'w': #right
             minispeed = 20
             motorspeed = 0
-        elif holder == b'x': # diagonal up right
+        elif holder == 'x': # diagonal up right
             minispeed = 20
             motorspeed = 20
-        elif holder == b'z': # diagonal up left
+        elif holder == 'z': # diagonal up left
             minispeed = -20
             motorspeed = 20
-        elif holder == b't': # diagonal down left
+        elif holder == 't': # diagonal down left
             minispeed = -20
             motorspeed = -20
-        elif holder == b'v': # diagonal down right
+        elif holder == 'v': # diagonal down right
             minispeed = 20
             motorspeed = -20
         else: # q; middle
             motorspeed = 0
             minispeed = 0
+        
+        ''' if color.color() != Color.WHITE:
+            uart.write('b')
+            print('LETTER')
+        else:
+            uart.write('a')'''
    
     
 
