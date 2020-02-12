@@ -6,6 +6,7 @@ Created on Sun Feb  9 11:37:52 2020
 @author: priyamisner
 based off of: https://medium.com/technology-invention-and-more/how-to-build-a-simple-neural-network-in-9-lines-of-python-code-cc8f23647ca1
 """
+
 from numpy import exp, array, random, dot
 
 class NeuralNetwork():
@@ -46,8 +47,11 @@ if __name__ == "__main__":
     neural_network = NeuralNetwork()
     print("Starting Weight: ")
     print(neural_network.synaptic_weights)  
-    training_set_inputs = array([[0,0,1],[1,1,1],[1,0,1],[0,1,1]])
-    training_set_outputs = array([[0,1,1,0]]).T
+    #training_set_inputs = array([[1.5,4.5,1.7],[1.6,4.6,2.3],[1.7,4.9,2.2],[7.8,9.1,10.0],[7.6,9.0,10.0]])
+    #training_set_outputs = array([[5,5,5,1,1]]).T
+    
+    training_set_inputs = array([[10,20,30],[11,21,31],[30,43,100],[28,41,100]])
+    training_set_outputs = array([[10,10,0,0]]).T
     # Train the neural network using a training set.
     # Do it 10,000 times and make small adjustments each time.
     neural_network.train(training_set_inputs, training_set_outputs, 100000)
@@ -55,5 +59,5 @@ if __name__ == "__main__":
     print(neural_network.synaptic_weights)
 
     # Test the neural network with a new situation.
-    print("Considering new situation [1, 0, 0] -> ?: ")
-    print(neural_network.think(array([1, 0, 0])))
+    print("Considering new situation -> ?: ")
+    print(neural_network.think(array([10,20,30])))

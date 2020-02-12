@@ -18,7 +18,7 @@ import csv
 
 # Write your program here
 left_motor = Motor(Port.D, Direction.CLOCKWISE, [40,24])
-right_motor = Motor(Port.A, Direction.COUNTERCLOCKWISE, [40,24])
+right_motor = Motor(Port.A, Direction.CLOCKWISE, [40,24])
 robot = DriveBase(left_motor,right_motor,56,202)
 
 
@@ -48,15 +48,14 @@ class controller(object):
         self.der_r = 0
         self.der_l_p = 0
         self.der_r_p = 0
-        self.speed = 200
         
         
-        self.k_p = .75
+        self.k_p = 0.6
         self.k_i = 0
-        self.k_d = .3
+        self.k_d = 0
 
     def prop_control(self):
-        #self.left = self.left -25
+        #self.left *= 1.25
         self.lerror = self.setpoint_l - self.left
         self.rerror = self.setpoint_r - self.right
         fobj.write('Left,'+str((self.lerror))+ ',Right,'+ str((self.rerror))+'\n')
@@ -72,44 +71,31 @@ class controller(object):
         self.der_l = self.lerror - self.der_l_p
         self.der_r = self.rerror - self.der_r_p   
         fobj.write(',,,,,,,,Left Deriv,'+str(self.der_l)+ ',RightDeriv,'+str(self.der_r)+'\n')
-    
-    def setspeed(self):
-        if (self.der_l or self.der_r) < -70:
-            scaled = (self.der_l + self.der_r)/4
-            scaled = int(round(scaled))
-            self.speed += scaled 
-        else:
-            pass
-        #print(self.speed)
-        return self.speed
 
     def setangle(self):
         self.prop_control()
-        #self.int_control()
+        self.int_control()
         self.der_control()
         # proportional control (self.k_p * (abs(self.lerror)*-1 + abs(self.rerror))) +
-        
-        
-        if abs(self.lerror) > abs(self.rerror):
-            anglechange = self.k_p * (self.lerror)*1
-            anglechange -= self.k_d*(self.der_l)
-        else: 
-        
-            anglechange = self.k_p * (self.rerror)*-1
-            anglechange -= self.k_d*(self.der_l)*1
-
-        #fobj.write(',,,,,,,,,,,,Output,'+str((anglechange))+'\n')
+        anglechange = (self.k_p * (abs(self.lerror)*-1+ abs(self.rerror)))
+        fobj.write(',,,,,,,,,,,,Output,'+str((anglechange))+'\n')
         #anglechange += (self.k_d * (self.der_l+self.der_r))
-        
+        '''if self.lerror > self.rerror:
+            anglechange += (self.k_i * ( self.int_l))
+            anglechange += (self.k_d * (self.der_l))
+        else: 
+            anglechange += (self.k_i * ( self.int_r))
+            anglechange += (self.k_d * (self.der_r))'''
         return anglechange
 
-   
+    # def lost(self):
+    #     if self.lerror and self.rerror > 200:
 
 # Write your program here
 def main():
     #brick.sound.beep()
    
-    sens = LegoPort(address ='ev3-ports:in3') # which port?? 1,2,3, or 4
+    sens = LegoPort(address ='ev3-ports:in1') # which port?? 1,2,3, or 4
     sens.mode = 'ev3-analog'
     
 
@@ -126,8 +112,8 @@ def main():
         controller.right = lightLevel2
         controller.left = lightLevel
 
-        robot.drive(80,controller.setangle())
+        robot.drive(50,controller.setangle())
 
-controller = controller(327, 327)
+controller = controller(400, 400)
 main()
 fobj.close()

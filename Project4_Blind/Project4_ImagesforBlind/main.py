@@ -11,58 +11,65 @@ from pybricks.robotics import DriveBase
 from pybricks.iodevices import AnalogSensor, UARTDevice
 
 brick.sound.beep()
-
-minimotor = Motor(Port.D)
-leftmotor = Motor(Port.C, Direction.CLOCKWISE)
-rightmotor= Motor(Port.B, Direction.CLOCKWISE)
+print("pls but sadder")
+minimotor = Motor(Port.C)
+leftmotor = Motor(Port.A, Direction.CLOCKWISE)
+rightmotor= Motor(Port.D, Direction.CLOCKWISE)
 robot = DriveBase(leftmotor,rightmotor, 40, 200)
 button = TouchSensor(Port.S1)
 color = ColorSensor(Port.S2)
 
 #sense = AnalogSensor(Port.S3, False)
-
-
+uart = UARTDevice(Port.S2, 9600, timeout=1000)
 direction = 1
 
+#initial waiting phase:
+
+handshake = "f"
+while uart.waiting() == 0:
+    wait(10)
+print('b4')
+handshake = uart.read(1)
+print('hi',handshake)
+holder = b'a'
+motorspeed = 0
+minispeed = 0
 while True:
-    if button.pressed():
-        direction *= -1
-    minimotor.run(direction*20)
-    robot.drive(direction*0,0)
-    data = color.color()
-    #uart.write(data)
-    wait(500)
-    #print(color.color())
+    
+    if uart.waiting() != 0:
+        holder = uart.read(1)
+        print(holder)
+        if holder == b'y': #forward
+            motorspeed = 20
+            minispeed = 0
+        elif holder == b'u': #backward
+            motorspeed = -20
+            minispeed = 0
+        elif holder == b's': #left
+            minispeed = -20
+            motorspeed = 0
+        elif holder == b'w': #right
+            minispeed = 20
+            motorspeed = 0
+        elif holder == b'x': # diagonal up right
+            minispeed = 20
+            motorspeed = 20
+        elif holder == b'z': # diagonal up left
+            minispeed = -20
+            motorspeed = 20
+        elif holder == b't': # diagonal down left
+            minispeed = -20
+            motorspeed = -20
+        elif holder == b'v': # diagonal down right
+            minispeed = 20
+            motorspeed = -20
+        else: # q; middle
+            motorspeed = 0
+            minispeed = 0
+   
+    
 
 
-
-
-
-
-
-'''
-from pybricks.hubs import EV3Brick
-from pybricks.tools import wait, StopWatch, DataLog
-from pybricks.parameters import Color, Port
-from pybricks.ev3devices import Motor
-from pybricks.iodevices import AnalogSensor, UARTDevice
-
-# Initialize the EV3
-ev3 = EV3Brick()
-ev3.speaker.beep()
-sense = AnalogSensor(Port.S3, False)
-uart = UARTDevice(Port.S3, 9600, timeout=2000)
-
-
-#watch = StopWatch()
-
-# Turn on a red light
-ev3.light.on(Color.BLUE)
-ev3.speaker.say("About to take data")
-count = 0
-while True:
-    wait(1000)
-    data = uart.read_all()  #if you connect Pin 5 & 6 you should see Test on the screen
-    count += 1
-    ev3.screen.print(count,data)
-'''
+    robot.drive(motorspeed,0)
+    minimotor.run(minispeed)
+    wait(0.1)
