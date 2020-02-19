@@ -67,7 +67,7 @@ def main():
             continue
         try:
             data = ujson.loads(raw_data)
-            second = ujson.loads(raw_data2)
+            #second = ujson.loads(raw_data2)
             for i,num in enumerate(data):
                 data[labels[i]] = round((data[labels[i]]),2)
         except:
@@ -89,7 +89,7 @@ def main():
         #option 2: drumsticks (needs 2 arduinos, 1 to set, 1 to play)
         flick_mag = math.pow((math.pow(data['yGyro'],2)+math.pow(data['zGyro'],2)+math.pow(data['xGyro'],2)),0.5)
         flick = []
-        '''
+        
         while  flick_mag > 200:
             # Read raw data
             raw_data = s.read(s.inWaiting()).decode('utf-8')
@@ -104,7 +104,7 @@ def main():
             if flick_mag > 70:
                 flick.append(flick_mag)
         #print(flick)
-        '''
+        
         mag = 1
         if len(flick)>0:
             length = len(flick)
