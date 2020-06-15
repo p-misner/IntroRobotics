@@ -34,7 +34,7 @@ g= 9.81
 theta = 47.5
 
 while True:
-    speed =dcconvert(calcv0(float(ultra.distance())/1000 + 1.75*2.54/100,theta,h))
+    speed =dcconvert(calcv0(float(ultra.distance())/1000 + 1.75*2.54/100,theta,h)) -2
     if btn.pressed(): 
         for i in range(1000):
             if abs(throw.angle())< abs(115):
